@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Imperium Academy | Shadow Exam</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background: #f4f4f4; }
+        #exam-container { background: #fff; padding: 20px; border-radius: 8px; max-width: 500px; margin: auto; }
+        .option-btn { display: block; margin: 10px 0; padding: 12px; width: 100%; cursor: pointer; border: 1px solid #ccc; border-radius: 5px; background: #fff; }
+        .option-btn:hover { background: #eee; }
+    </style>
+</head>
+<body>
+
+    <div id="exam-container">
+        <h1>Shadow Exam</h1>
+        <div id="question-area">
+            <p id="question-text">Loading your challenge...</p>
+            <div id="options-area"></div>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://zguxchkcfssauysikavw.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_uJkG_1H-LysZ2NXyUu5VYQ_vJQOEujC';
+        const FUNCTION_URL = 'YOUR_DEPLOYED_FUNCTION_URL_HERE';
+
+        async function fetchQuestion() {
+            try {
+                const response = await fetch(FUNCTION_URL, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': 'Bearer ' + SUPABASE_ANON_KEY
+                    },
+                    body: JSON.stringify({ subject: "Mathematics", difficulty: "Hard" })
+                });
+                
+                const data = await response.json();
+                
+                document.getElementById('question-text').innerText = data.question;
+                
+                const optionsArea = document.getElementById('options-area');
+                optionsArea.innerHTML = ''; 
+                
+                data.options.forEach(opt => {
+                    const btn = document.createElement('button');
+                    btn.innerText = opt;
+                    btn.className = 'option-btn';
+                    btn.onclick = () => alert("Selected: " + opt);
+                    optionsArea.appendChild(btn);
+                });
+            } catch (error) {
+                document.getElementById('question-text').innerText = "Error loading question.";
+                console.error("Fetch error:", error);
+            }
+        }
+
+        fetchQuestion();
+    </script>
+</body>
+</html>
